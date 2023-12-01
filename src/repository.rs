@@ -10,13 +10,6 @@ pub trait OrderRepository {
     /// CREATE - Store the item [Order] with the table number and how long the item will take to cook.
     async fn create(&self, order: &Order) -> Result<Uuid, Self::ErrT>;
 
-    /// DELETE - Remove latest [Order] item for a specified menu item [Order::menu_item_id] for a specified table number.
-    async fn delete_order_item_from_table(
-        &self,
-        menu_item_id: i32,
-        table_number: i32,
-    ) -> Result<u64, Self::ErrT>;
-
     /// READ - Show all [Order] items for a specified table number
     async fn read_orders_by_table(
         &self,
@@ -32,8 +25,16 @@ pub trait OrderRepository {
 
     /// UPDATE - Not implemented. For this simple API, updates are done by removing and creating new [Order]s.
     async fn update_order(&self) -> Result<(), Self::ErrT>;
+
+    /// DELETE - Remove latest [Order] item for a specified menu item [Order::menu_item_id] for a specified table number.
+    async fn delete_order_item_from_table(
+        &self,
+        menu_item_id: i32,
+        table_number: i32,
+    ) -> Result<u64, Self::ErrT>;
 }
 
+#[derive(Clone)]
 pub struct PgSqlOrderRepository {
     pool: PgPool,
 }
@@ -59,26 +60,6 @@ impl OrderRepository for PgSqlOrderRepository {
         .execute(&self.pool)
         .await?;
         Ok(order.id)
-    }
-
-    async fn delete_order_item_from_table(
-        &self,
-        menu_item_id: i32,
-        table_number: i32,
-    ) -> Result<u64, Self::ErrT> {
-        let rows_deleted = sqlx::query!(
-            "DELETE FROM orders WHERE id IN (
-              SELECT id FROM orders
-              WHERE table_number = $1 AND menu_item_id = $2
-              ORDER BY created_at DESC LIMIT 1
-             )",
-            table_number,
-            menu_item_id,
-        )
-        .execute(&self.pool)
-        .await?
-        .rows_affected();
-        Ok(rows_deleted)
     }
 
     async fn read_orders_by_table(
@@ -118,5 +99,25 @@ impl OrderRepository for PgSqlOrderRepository {
 
     async fn update_order(&self) -> Result<(), Self::ErrT> {
         Ok(())
+    }
+
+    async fn delete_order_item_from_table(
+        &self,
+        menu_item_id: i32,
+        table_number: i32,
+    ) -> Result<u64, Self::ErrT> {
+        let rows_deleted = sqlx::query!(
+            "DELETE FROM orders WHERE id IN (
+              SELECT id FROM orders
+              WHERE table_number = $1 AND menu_item_id = $2
+              ORDER BY created_at DESC LIMIT 1
+             )",
+            table_number,
+            menu_item_id,
+        )
+        .execute(&self.pool)
+        .await?
+        .rows_affected();
+        Ok(rows_deleted)
     }
 }

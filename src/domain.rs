@@ -1,5 +1,6 @@
 use crate::repository::OrderRepository;
 use chrono::{DateTime, Utc};
+use serde::Serialize;
 use uuid::Uuid;
 
 /// Every item created for a table number is defined as a restaurant [Order]
@@ -20,7 +21,7 @@ pub struct MenuItem {
 }
 
 /// Struct to map complete queries that joins [MenuItem]s info into the [Order]s.
-#[derive(sqlx::FromRow, Debug, Clone)]
+#[derive(Serialize, sqlx::FromRow, Debug, Clone)]
 pub struct CompleteOrder {
     pub order_id: Uuid,
     pub table_number: i32,
@@ -65,6 +66,33 @@ impl Order {
     }
 }
 
+/// Get all orders from a table number.
+///
+/// # Examples
+///
+/// Basic usage:
+///
+/// ```
+/// let orders: Vec<Order> = read_orders_by_table(&pg_sql_order_repository, table_number).await?;
+/// assert!(orders.len() >= 0);
+/// ```
+pub async fn read_orders_by_table<O: OrderRepository>(
+    repo: &O,
+    table_number: i32,
+) -> Result<Vec<CompleteOrder>, O::ErrT> {
+    repo.read_orders_by_table(table_number).await
+}
+
+/// Get an order from a specific menu item and a specific table number.
+///
+/// # Examples
+///
+/// Basic usage:
+///
+/// ```
+/// let order = read_order_item_from_table(&pg_sql_order_repository, menu_item_id, table_num).await?;
+/// assert!(order.is_some());
+/// ```
 pub async fn read_order_item_from_table<O: OrderRepository>(
     repo: &O,
     menu_item_id: i32,
@@ -91,21 +119,4 @@ pub async fn delete_order_item_from_table<O: OrderRepository>(
 ) -> Result<u64, O::ErrT> {
     repo.delete_order_item_from_table(menu_item_id, table_number)
         .await
-}
-
-/// Get all orders from a table number.
-///
-/// # Examples
-///
-/// Basic usage:
-///
-/// ```
-/// let orders: Vec<Order> = read_orders_by_table(&pg_sql_order_repository, 1).await?;
-/// assert!(orders.len() >= 0);
-/// ```
-pub async fn read_orders_by_table<O: OrderRepository>(
-    repo: &O,
-    table_number: i32,
-) -> Result<Vec<CompleteOrder>, O::ErrT> {
-    repo.read_orders_by_table(table_number).await
 }
