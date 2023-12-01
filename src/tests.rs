@@ -2,6 +2,7 @@
 mod pg_sql_tests {
     use crate::domain::*;
     use crate::repository::PgSqlOrderRepository;
+    use crate::constants::FOOD_ITEMS;
     use futures::future::try_join_all;
     use rand::Rng;
     use sqlx::postgres::PgPoolOptions;
@@ -122,57 +123,4 @@ mod pg_sql_tests {
         Ok(())
     }
 
-    ///List of 50 popular japanese food items.
-    const FOOD_ITEMS: [&str; 50] = [
-        "Sushi",
-        "Okonomiyaki",
-        "Miso Soup",
-        "Yakitori",
-        "Udon",
-        "Takoyaki",
-        "Soba",
-        "Sukiyaki",
-        "Sashimi",
-        "Tofu",
-        "Onigiri",
-        "Wagashi",
-        "Natto",
-        "Oden",
-        "Shabu Shabu",
-        "Tempura",
-        "Ramen",
-        "Tonkatsu",
-        "Kaiseki",
-        "Kappo Ryori",
-        "Shojin Ryori",
-        "Osechi Ryori",
-        "Zenzai",
-        "Oshiruko",
-        "Wagyu",
-        "Bento",
-        "Omurice",
-        "Kiritanpo",
-        "Mochi",
-        "Gyoza",
-        "Shogayaki",
-        "Fugu",
-        "Gyudon",
-        "Karaage",
-        "Oyakodon",
-        "Robatayaki",
-        "Shirasu",
-        "Somen",
-        "Imagawayaki",
-        "Melonpan",
-        "Warabimochi",
-        "Tamagoyaki",
-        "Tsukemono",
-        "Yokan",
-        "Gyutan",
-        "Chankonabe",
-        "Anmitsu",
-        "Hiyashi chuka",
-        "Kushiage",
-        "Yatsuhashi",
-    ];
 }

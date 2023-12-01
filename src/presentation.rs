@@ -3,7 +3,7 @@ use crate::domain::{
 };
 use crate::repository::PgSqlOrderRepository;
 use actix_web::{web, HttpResponse};
-use log::debug;
+use log::error;
 use serde::Deserialize;
 
 /// The definition of [OrderRequest] which captures incoming JSON data
@@ -14,8 +14,6 @@ pub struct OrderRequest {
 }
 
 /// Post handler for creating an item [Order] with the table number and how long the item will take to cook.
-///
-/// route path: "/orders"
 pub async fn create_order(
     data: web::Data<PgSqlOrderRepository>,
     form: web::Json<OrderRequest>,
@@ -26,7 +24,7 @@ pub async fn create_order(
     match order {
         Ok(uuid) => HttpResponse::Ok().json(uuid),
         Err(error) => {
-            debug!("{:?}", error);
+            error!("{:?}", error);
             match error {
                 sqlx::Error::Database(_) => {
                     HttpResponse::InternalServerError().json("This menu item doesn't exist.")
@@ -38,8 +36,6 @@ pub async fn create_order(
 }
 
 /// Get handler for querying all [Order] items for a specified table number.
-///
-/// route path: "/tables/{table_number}/orders"
 pub async fn get_table_orders(
     data: web::Data<PgSqlOrderRepository>,
     path: web::Path<i32>,
@@ -50,15 +46,13 @@ pub async fn get_table_orders(
         Ok(items) if items.len() > 0 => HttpResponse::Ok().json(items),
         Ok(_) => HttpResponse::NotFound().json("No orders found"),
         Err(error) => {
-            debug!("{:?}", error);
+            error!("{:?}", error);
             HttpResponse::InternalServerError().finish()
         }
     }
 }
 
 /// Get handler for querying latest [Order] item for a specified menu item [Order::menu_item_id] for a specified table number.
-///
-/// route path: "/tables/{table_number}/orders"
 pub async fn get_order_from_menu_item_and_table(
     data: web::Data<PgSqlOrderRepository>,
     path: web::Path<(i32, i32)>,
@@ -69,15 +63,13 @@ pub async fn get_order_from_menu_item_and_table(
         Ok(item) if item.is_some() => HttpResponse::Ok().json(item),
         Ok(_) => HttpResponse::NotFound().json("No order found."), // No row found
         Err(error) => {
-            debug!("{:?}", error);
+            error!("{:?}", error);
             HttpResponse::InternalServerError().finish()
         }
     }
 }
 
 /// Delete handler for removing latest [Order] item for a specified menu item [Order::menu_item_id] for a specified table number.
-///
-/// route path: "/tables/{table_number}/menu_items/{menu_item_id}"
 pub async fn delete_menu_item_from_order(
     data: web::Data<PgSqlOrderRepository>,
     path: web::Path<(i32, i32)>,
