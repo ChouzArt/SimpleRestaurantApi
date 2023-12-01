@@ -74,25 +74,35 @@ async fn setup_pg_db() -> Result<PgPool, sqlx::Error> {
     sqlx::migrate!().run(&pool).await?;
     info!("Running migrations ... OK");
 
-    // Reset food menu items table
-    sqlx::query!("TRUNCATE menu_items CASCADE")
-        .execute(&pool)
+    // Initialize menu items table if not existant
+    let menu_items = sqlx::query_as!(domain::MenuItem, "SELECT * FROM menu_items")
+        .fetch_all(&pool)
         .await?;
-    let mut rng = rand::thread_rng();
-    let mut futures = vec![];
-    for (i, item) in FOOD_ITEMS.iter().enumerate() {
-        futures.push(
-            sqlx::query!(
-                "INSERT INTO menu_items (id, item_name, cooking_time) VALUES ($1, $2, $3)",
-                i as i32,
-                item,
-                rng.gen_range(5..15),
-            )
-            .execute(&pool),
-        );
+    match menu_items.len() >= 50 {
+        true => {
+            info!("TABLE menu_items already initialized ... OK");
+            return Ok(pool)
+        },
+        false => {
+            sqlx::query!("TRUNCATE menu_items CASCADE")
+            .execute(&pool)
+            .await?;
+            let mut rng = rand::thread_rng();
+            let mut futures = vec![];
+            for (i, item) in FOOD_ITEMS.iter().enumerate() {
+                futures.push(
+                    sqlx::query!(
+                        "INSERT INTO menu_items (id, item_name, cooking_time) VALUES ($1, $2, $3)",
+                        i as i32,
+                        item,
+                        rng.gen_range(5..15),
+                    )
+                    .execute(&pool),
+                );
+            }
+            try_join_all(futures).await?;
+            info!("TABLE menu_items initialized ... OK");
+            return Ok(pool)
+        }
     }
-    try_join_all(futures).await?;
-    info!("Menu items table RESET ... OK");
-
-    Ok(pool)
 }

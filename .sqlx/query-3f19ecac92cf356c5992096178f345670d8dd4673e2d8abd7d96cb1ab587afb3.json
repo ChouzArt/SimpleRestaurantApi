@@ -1,0 +1,32 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM menu_items",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "item_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "cooking_time",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "3f19ecac92cf356c5992096178f345670d8dd4673e2d8abd7d96cb1ab587afb3"
+}
