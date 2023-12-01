@@ -1,0 +1,53 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT orders.id as \"order_id\", table_number, menu_item_id, created_at, item_name, cooking_time\n            FROM orders\n            INNER JOIN menu_items ON orders.menu_item_id = menu_items.id\n            WHERE orders.menu_item_id = $1 AND orders.table_number = $2\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "order_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "table_number",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "menu_item_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 4,
+        "name": "item_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "cooking_time",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "809c1273b85fa5d7107a8cbb8c2291af43c71697863b7b070c024ad3ccdb5c9f"
+}

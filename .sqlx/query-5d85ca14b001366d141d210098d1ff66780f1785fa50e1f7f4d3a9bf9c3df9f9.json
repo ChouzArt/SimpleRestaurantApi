@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "TRUNCATE menu_items CASCADE",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "5d85ca14b001366d141d210098d1ff66780f1785fa50e1f7f4d3a9bf9c3df9f9"
+}

@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "DELETE FROM orders WHERE id IN (\n              SELECT id FROM orders\n              WHERE table_number = $1 AND menu_item_id = $2\n              ORDER BY created_at DESC LIMIT 1\n             )",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "5b963c40952f93fd9823e3fb9ae59609c57b79da177685a674f0e3cf5c293a89"
+}
