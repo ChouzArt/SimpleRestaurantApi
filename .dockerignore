@@ -1,0 +1,9 @@
+target
+scripts
+Cargo.lock
+**/*.rs.bk
+Dockerfile
+.dockerignore
+.git
+.gitignore
+.env

@@ -26,6 +26,7 @@ async fn main() -> std::io::Result<()> {
         }
     };
     let pg_sql_order_repository = PgSqlOrderRepository::new(pool);
+    let socket_addrs = env::var("SOCKETADDRS").expect("SOCKETADDRS must be set");
     HttpServer::new(move || {
         App::new()
             .wrap(Logger::default())
@@ -49,7 +50,7 @@ async fn main() -> std::io::Result<()> {
             // Add data to your app
             .app_data(web::Data::new(pg_sql_order_repository.clone()))
     })
-    .bind("127.0.0.1:8080")?
+    .bind(socket_addrs)?
     .run()
     .await
 }
