@@ -59,5 +59,5 @@ You can create a Cargo build script to work around this with `sqlx migrate build
 
 ### 5. Set Up .env File
 ```console
-DATABASE_URL=postgres://user_dev:user_dev@localhost/restaurant_db_dev
+DATABASE_URL=postgres://test_user:test_password@localhost/restaurant_db
 ```

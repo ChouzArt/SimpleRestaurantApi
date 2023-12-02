@@ -120,3 +120,10 @@ pub async fn delete_order_item_from_table<O: OrderRepository>(
     repo.delete_order_item_from_table(menu_item_id, table_number)
         .await
 }
+
+pub async fn delete_order_by_id<O: OrderRepository>(
+    repo: &O,
+    order_id: Uuid,
+) -> Result<u64, O::ErrT> {
+    repo.delete_order_by_id(order_id).await
+}

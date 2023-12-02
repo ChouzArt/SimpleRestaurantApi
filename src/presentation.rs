@@ -1,13 +1,15 @@
 use crate::domain::{
-    delete_order_item_from_table, read_order_item_from_table, read_orders_by_table, Order,
+    delete_order_by_id, delete_order_item_from_table, read_order_item_from_table,
+    read_orders_by_table, Order,
 };
 use crate::repository::PgSqlOrderRepository;
 use actix_web::{web, HttpResponse};
 use log::error;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 /// The definition of [OrderRequest] which captures incoming JSON data
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct OrderRequest {
     pub table_number: i32,
     pub menu_item_id: i32,
@@ -80,6 +82,23 @@ pub async fn delete_menu_item_from_order(
 
     match delete_result {
         Ok(rows_deleted) if rows_deleted > 0 => HttpResponse::Ok().json("Order deleted."),
+        Ok(_) => HttpResponse::NotFound().json("No orders found to delete."), // No rows found to delete
+        Err(_) => HttpResponse::InternalServerError().finish(),
+    }
+}
+
+/// Delete handler for removing [Order] by id
+pub async fn delete_order(
+    data: web::Data<PgSqlOrderRepository>,
+    path: web::Path<Uuid>,
+) -> HttpResponse {
+    let order_id = path.into_inner();
+    let delete_result = delete_order_by_id(data.as_ref(), order_id).await;
+    match delete_result {
+        Ok(rows_deleted) if rows_deleted == 1 => HttpResponse::Ok().json("Order deleted."),
+        Ok(rows_deleted) if rows_deleted >= 2 => {
+            HttpResponse::InternalServerError().json("Multiple orders deleted, but shouldn't had been possible... Why multiple orders had same id?")
+        }
         Ok(_) => HttpResponse::NotFound().json("No orders found to delete."), // No rows found to delete
         Err(_) => HttpResponse::InternalServerError().finish(),
     }

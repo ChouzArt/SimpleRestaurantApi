@@ -32,6 +32,9 @@ pub trait OrderRepository {
         menu_item_id: i32,
         table_number: i32,
     ) -> Result<u64, Self::ErrT>;
+
+    /// DELETE - Remove by [Order::id]
+    async fn delete_order_by_id(&self, order_id: Uuid) -> Result<u64, Self::ErrT>;
 }
 
 #[derive(Clone)]
@@ -118,6 +121,14 @@ impl OrderRepository for PgSqlOrderRepository {
         .execute(&self.pool)
         .await?
         .rows_affected();
+        Ok(rows_deleted)
+    }
+
+    async fn delete_order_by_id(&self, order_id: Uuid) -> Result<u64, Self::ErrT> {
+        let rows_deleted = sqlx::query!("DELETE FROM orders WHERE id = $1", order_id,)
+            .execute(&self.pool)
+            .await?
+            .rows_affected();
         Ok(rows_deleted)
     }
 }
