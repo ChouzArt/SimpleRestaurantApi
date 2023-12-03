@@ -5,7 +5,7 @@ use log::error;
 
 
 #[actix_web::main]
-async fn main() -> Result<(), actix_web::Error> {
+async fn main() -> Result<(), std::io::Error> {
     // Loads the environment variables
     // - Local dev loads from .env
     // - Container loads from .yml file
@@ -29,7 +29,10 @@ async fn main() -> Result<(), actix_web::Error> {
     let pg_sql_order_repository = PgSqlOrderRepository::new(pool);
     let server_result = new_http_pg_server(&socket_addrs, pg_sql_order_repository).await;
     match server_result {
-        Ok(_) => Ok(()),
-        Err(error) => Err(error),
+        Ok(server) => server.await,
+        Err(error) => {
+            error!("{:?}",error);
+            Err(std::io::Error::new(std::io::ErrorKind::Other, error.to_string()))
+        },
     }
 }
