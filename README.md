@@ -24,7 +24,7 @@ Before you begin, ensure Docker and Docker Compose are installed on your system 
 Clone the repository to your local machine:
 
 ```
-git clone https://github.com/your-github-username/restaurant-system.git
+git clone https://github.com/ChouzArt/SimpleRestaurantApi.git
 ```
 
 Use Docker Compose to build and run the services. The command will set up the PostgreSQL database, run database migrations, and start the application server on the specified port (default: 8080).
